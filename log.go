@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 )
 
 var Debug = false
@@ -29,4 +30,16 @@ func LogcErrorfd(format string, a ...interface{}) {
 	file, line := logctx(1)
 
 	log.Printf("ERROR: %s:%d %s", file, line, fmt.Sprintf(format, a...))
+}
+
+func LogcFatalf(format string, a ...interface{}) {
+	log.Printf("FATAL: "+format, a...)
+	os.Exit(1)
+}
+
+func LogcFatalfd(format string, a ...interface{}) {
+	file, line := logctx(1)
+
+	log.Printf("FATAL: %s:%d %s", file, line, fmt.Sprintf(format, a...))
+	os.Exit(1)
 }
