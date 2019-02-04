@@ -22,6 +22,16 @@ func LogcDebugfd(format string, a ...interface{}) {
 	}
 }
 
+func LogcInfof(format string, a ...interface{}) {
+	log.Printf(format, a...)
+}
+
+func LogcInfofd(format string, a ...interface{}) {
+	file, line := logctx(1)
+
+	log.Printf("%s:%d %s", file, line, fmt.Sprintf(format, a...))
+}
+
 func LogcErrorf(format string, a ...interface{}) {
 	log.Printf("ERROR: "+format, a...)
 }
