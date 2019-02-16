@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+	"syscall"
 	"testing"
 
 	"github.com/akfaew/test"
@@ -53,4 +55,13 @@ func TestHasElem(t *testing.T) {
 		ret := HasElem(tc.arr, tc.elem)
 		test.True(t, ret == tc.ret)
 	}
+}
+
+func TestErrors(t *testing.T) {
+	errs := []error{
+		fmt.Errorf("First error: server error"),
+		fmt.Errorf("Second error: %s", syscall.ENOPKG.Error()),
+		fmt.Errorf("Third error: %s", syscall.ENOTCONN.Error()),
+	}
+	test.Fixture(t, Errors(errs).Error())
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -27,4 +28,13 @@ func HasElem(arr interface{}, elem interface{}) bool {
 	}
 
 	return false
+}
+
+func Errors(errs []error) error {
+	var errstrings []string
+	for _, e := range errs {
+		errstrings = append(errstrings, e.Error())
+	}
+
+	return fmt.Errorf("[\"%s\"]", strings.Join(errstrings, "\", \""))
 }
