@@ -31,6 +31,10 @@ func HasElem(arr interface{}, elem interface{}) bool {
 }
 
 func Errors(errs []error) error {
+	if len(errs) == 0 {
+		return nil
+	}
+
 	var errstrings []string
 	for _, e := range errs {
 		errstrings = append(errstrings, e.Error())

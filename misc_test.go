@@ -64,4 +64,5 @@ func TestErrors(t *testing.T) {
 		fmt.Errorf("Third error: %s", syscall.ENOTCONN.Error()),
 	}
 	test.Fixture(t, Errors(errs).Error())
+	test.NoError(t, Errors([]error{}))
 }
