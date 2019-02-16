@@ -15,6 +15,9 @@ test-cover: fmt
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
+push: test
+	git push
+
 update:
 	go get -u
 	go mod tidy
