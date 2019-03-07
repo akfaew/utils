@@ -37,7 +37,9 @@ func Errors(errs []error) error {
 
 	var errstrings []string
 	for _, e := range errs {
-		errstrings = append(errstrings, e.Error())
+		if e != nil {
+			errstrings = append(errstrings, e.Error())
+		}
 	}
 
 	return fmt.Errorf("[\"%s\"]", strings.Join(errstrings, "\", \""))
