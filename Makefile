@@ -17,6 +17,7 @@ test-cover: fmt
 
 push: test
 	git push
+	git push --tags
 
 update:
 	go get -u
