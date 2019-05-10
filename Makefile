@@ -23,3 +23,6 @@ update:
 	go get -u
 	go mod tidy
 	go mod verify
+
+clean:
+	rm -f coverage.out
