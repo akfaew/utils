@@ -8,9 +8,9 @@ import (
 
 func Test_Init(t *testing.T) {
 	Init("/a/b/c/d/e.go")
-	test.True(t, "/a/b/c/d/" == trimprefix)
+	test.EqualStr(t, "/a/b/c/d/", trimprefix)
 
 	Init("")
 	file, _ := logctx(0)
-	test.True(t, file == "utils_test.go")
+	test.EqualStr(t, file, "utils_test.go")
 }

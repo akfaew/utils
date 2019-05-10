@@ -25,8 +25,8 @@ func TestSlash(t *testing.T) {
 
 	for _, tc := range tests {
 		ret1, ret2 := Slash(tc.input)
-		test.True(t, ret1 == tc.ret1)
-		test.True(t, ret2 == tc.ret2)
+		test.EqualStr(t, ret1, tc.ret1)
+		test.EqualStr(t, ret2, tc.ret2)
 	}
 }
 
