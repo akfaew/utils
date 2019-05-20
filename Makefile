@@ -3,7 +3,10 @@ TEST_ARGS = -failfast
 fmt:
 	go fmt ./...
 
-test: fmt
+lint:
+	golangci-lint run
+
+test: fmt lint
 	go test $(TEST_ARGS) ./...
 
 test-regen: fmt

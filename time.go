@@ -5,9 +5,11 @@ import "time"
 type TimeReal struct{}
 type TimeTest struct{}
 
-var Time interface {
+type MockTime interface {
 	Since(t time.Time) time.Duration
-} = TimeReal{}
+}
+
+var Time MockTime = TimeReal{}
 
 func (_ TimeReal) Since(t time.Time) time.Duration {
 	return time.Since(t)
