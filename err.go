@@ -6,7 +6,8 @@ import (
 
 // Errorfc creates a new error and wraps it with context information using Errorc().
 func Errorfc(format string, a ...interface{}) error {
-	return Errorc(fmt.Errorf(format, a...))
+	file, line := logctx(1)
+	return fmt.Errorf("%s:%d %s", trim(file), line, fmt.Errorf(format, a...))
 }
 
 // Errorc wraps the error, if not nil, with context information, such as the file name
