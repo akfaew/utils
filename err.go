@@ -11,11 +11,17 @@ func Errorfc(format string, a ...interface{}) error {
 }
 
 // Errorc wraps the error, if not nil, with context information, such as the file name
-// and line.
-func Errorc(err error) error {
-	if err != nil {
-		file, line := logctx(1)
-		return fmt.Errorf("%s:%d %s", trim(file), line, err)
+// and line. If err is found in exclude, then it is returned unchanged.
+func Errorc(err error, exclude ...error) error {
+	if err == nil {
+		return nil
 	}
-	return nil
+
+	for _, e := range exclude {
+		if err == e {
+			return err
+		}
+	}
+	file, line := logctx(1)
+	return fmt.Errorf("%s:%d %s", trim(file), line, err)
 }
