@@ -63,6 +63,14 @@ func TestErrors(t *testing.T) {
 		fmt.Errorf("Second error: %s", syscall.ENOPKG.Error()),
 		fmt.Errorf("Third error: %s", syscall.ENOTCONN.Error()),
 	}
-	test.Fixture(t, Errors(errs).Error())
+	test.FixtureExtra(t, "Errors", Errors(errs).Error())
 	test.NoError(t, Errors([]error{}))
+
+	var el ErrorList
+	test.NoError(t, el.Error())
+	el.Append(errs[0])
+	test.FixtureExtra(t, "One", el.Error().Error())
+	el.Append(errs[1])
+	el.Append(errs[2])
+	test.FixtureExtra(t, "Three", el.Error().Error())
 }

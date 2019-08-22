@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"sync"
 )
 
 func Slash(text string) (string, string) {
@@ -28,6 +29,24 @@ func HasElem(arr interface{}, elem interface{}) bool {
 	}
 
 	return false
+}
+
+type ErrorList struct {
+	sync.Mutex
+	errs []error
+}
+
+func (errs *ErrorList) Append(err error) {
+	errs.Lock()
+	defer errs.Unlock()
+	errs.errs = append(errs.errs, err)
+}
+
+func (errs *ErrorList) Error() error {
+	errs.Lock()
+	defer errs.Unlock()
+
+	return Errors(errs.errs)
 }
 
 func Errors(errs []error) error {
