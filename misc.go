@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"hash/crc32"
 	"reflect"
 	"strings"
 	"sync"
@@ -62,4 +63,9 @@ func Errors(errs []error) error {
 	}
 
 	return fmt.Errorf("[\"%s\"]", strings.Join(errstrings, "\", \""))
+}
+
+// A simple sum for naming fixture files in tests, e.g. based on an URL.
+func Sum(txt string) string {
+	return fmt.Sprintf("%08x", crc32.Checksum([]byte(txt), crc32.IEEETable))
 }

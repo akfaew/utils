@@ -74,3 +74,11 @@ func TestErrors(t *testing.T) {
 	el.Append(errs[2])
 	test.FixtureExtra(t, "Three", el.Error().Error())
 }
+
+func TestSum(t *testing.T) {
+	for _, s := range []string{"a", "", "://!%$"} {
+		t.Run(Sum(s), func(t *testing.T) {
+			test.Fixture(t, fmt.Sprintf("%s -> %s\n", s, Sum(s)))
+		})
+	}
+}
