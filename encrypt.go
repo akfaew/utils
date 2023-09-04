@@ -11,6 +11,7 @@ import (
 
 type Key []byte
 
+//nolint:unused
 func genkey() string {
 	randbytes := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, randbytes); err != nil {

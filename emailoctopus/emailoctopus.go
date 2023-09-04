@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/akfaew/utils"
 )
 
 const (
@@ -35,19 +37,19 @@ func (eo *EmailOctopus) Add(ctx context.Context, email string) error {
 	}
 	p, err := json.Marshal(params)
 	if err != nil {
-		return Errorc(err)
+		return utils.Errorc(err)
 	}
 
 	u := fmt.Sprintf(eoapi+"lists/%s/contacts", eo.ListID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, bytes.NewBuffer(p))
 	if err != nil {
-		return Errorc(err)
+		return utils.Errorc(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return Errorc(err)
+		return utils.Errorc(err)
 	}
 	resp.Body.Close()
 
@@ -62,13 +64,13 @@ func (eo *EmailOctopus) Remove(ctx context.Context, email string) error {
 		eo.ListID, id, eo.APIKey)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u, nil)
 	if err != nil {
-		return Errorc(err)
+		return utils.Errorc(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return Errorc(err)
+		return utils.Errorc(err)
 	}
 	resp.Body.Close()
 
