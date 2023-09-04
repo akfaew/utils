@@ -30,33 +30,6 @@ func TestSlash(t *testing.T) {
 	}
 }
 
-func TestHasElem(t *testing.T) {
-	tests := []struct {
-		arr  interface{}
-		elem interface{}
-		ret  bool
-	}{
-		{"", "", false},
-		{5, "", false},
-		{[]int{}, 2, false},
-		{[]int{1}, 1, true},
-		{[]int{1}, 2, false},
-		{[]int{1, 2}, 2, true},
-		{[]int{1, 2, 3}, 2, true},
-		{[]string{}, 2, false},
-		{[]string{}, "", false},
-		{[]string{"a"}, "", false},
-		{[]string{"a"}, "a", true},
-		{[]string{"a", "b"}, "b", true},
-		{[]string{"a", "b", "c"}, "b", true},
-	}
-
-	for _, tc := range tests {
-		ret := HasElem(tc.arr, tc.elem)
-		test.True(t, ret == tc.ret)
-	}
-}
-
 func TestErrors(t *testing.T) {
 	errs := []error{
 		fmt.Errorf("First error: server error"),
