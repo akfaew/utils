@@ -1,10 +1,15 @@
 package utils
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"hash/crc32"
+	"math/rand"
+	"os"
+	"strconv"
 	"strings"
-	"sync"
 )
 
 func Slash(text string) (string, string) {
@@ -15,40 +20,29 @@ func Slash(text string) (string, string) {
 	return res[0], res[1]
 }
 
-type ErrorList struct {
-	sync.Mutex
-	errs []error
-}
-
-func (errs *ErrorList) Append(err error) {
-	errs.Lock()
-	defer errs.Unlock()
-	errs.errs = append(errs.errs, err)
-}
-
-func (errs *ErrorList) Error() error {
-	errs.Lock()
-	defer errs.Unlock()
-
-	return Errors(errs.errs)
-}
-
-func Errors(errs []error) error {
-	if len(errs) == 0 {
-		return nil
-	}
-
-	var errstrings []string
-	for _, e := range errs {
-		if e != nil {
-			errstrings = append(errstrings, e.Error())
-		}
-	}
-
-	return fmt.Errorf("[\"%s\"]", strings.Join(errstrings, "\", \""))
-}
-
 // A simple sum for naming fixture files in tests, e.g. based on an URL.
-func Sum(txt string) string {
-	return fmt.Sprintf("%08x", crc32.Checksum([]byte(txt), crc32.IEEETable))
+func Crc32(str string) string {
+	return fmt.Sprintf("%08x", crc32.Checksum([]byte(str), crc32.IEEETable))
+}
+
+// Generate a random string to append to emails, so that Gmail doesn't clump
+// them into "conversations".
+func RandEmail() string {
+	randomValue := strconv.Itoa(rand.Int())
+
+	hasher := md5.New()
+	hasher.Write([]byte(randomValue))
+	md5Hash := hex.EncodeToString(hasher.Sum(nil))
+
+	return md5Hash[:len(md5Hash)/2]
+}
+
+func Dump(path string, what interface{}) error {
+	if b, err := json.MarshalIndent(what, "", "\t"); err != nil {
+		return Errorc(err)
+	} else if err := os.WriteFile(path, b, 0644); err != nil {
+		return Errorc(err)
+	}
+
+	return nil
 }

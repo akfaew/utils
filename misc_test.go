@@ -2,10 +2,10 @@ package utils
 
 import (
 	"fmt"
-	"syscall"
 	"testing"
 
 	"github.com/akfaew/test"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSlash(t *testing.T) {
@@ -30,28 +30,15 @@ func TestSlash(t *testing.T) {
 	}
 }
 
-func TestErrors(t *testing.T) {
-	errs := []error{
-		fmt.Errorf("First error: server error"),
-		fmt.Errorf("Second error: %s", syscall.ENOPKG.Error()),
-		fmt.Errorf("Third error: %s", syscall.ENOTCONN.Error()),
-	}
-	test.FixtureExtra(t, "Errors", Errors(errs).Error())
-	test.NoError(t, Errors([]error{}))
-
-	var el ErrorList
-	test.NoError(t, el.Error())
-	el.Append(errs[0])
-	test.FixtureExtra(t, "One", el.Error().Error())
-	el.Append(errs[1])
-	el.Append(errs[2])
-	test.FixtureExtra(t, "Three", el.Error().Error())
+func TestRandEmail(t *testing.T) {
+	val := RandEmail()
+	require.Len(t, val, 16)
 }
 
-func TestSum(t *testing.T) {
+func TestCrc32(t *testing.T) {
 	for _, s := range []string{"a", "", "://!%$"} {
-		t.Run(Sum(s), func(t *testing.T) {
-			test.Fixture(t, fmt.Sprintf("%s -> %s\n", s, Sum(s)))
+		t.Run(Crc32(s), func(t *testing.T) {
+			test.Fixture(t, fmt.Sprintf("%s -> %s\n", s, Crc32(s)))
 		})
 	}
 }
