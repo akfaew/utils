@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akfaew/utils/ae"
 	"github.com/gorilla/mux"
-
-	"github.com/akfaew/syften/aelog"
 )
 
 type SimpleHandler func(http.ResponseWriter, *http.Request) *SimpleError
@@ -26,7 +25,7 @@ func NewSimpleError(code int, err error) *SimpleError {
 func (fn SimpleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if e := fn(w, r); e != nil {
 		ctx := r.Context()
-		lg := aelog.New(ctx)
+		lg := ae.NewLog(ctx)
 
 		m := meditation()
 		lg.Errorf("Handler error %d. err=\"%v\", meditation=%s", e.Code, e.Error, m)

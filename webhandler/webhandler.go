@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akfaew/syften/aelog"
+	"github.com/akfaew/utils/ae"
 	"github.com/gorilla/mux"
 )
 
@@ -76,7 +76,7 @@ func ParseTemplate(filenames ...string) *WebTemplate {
 func (fn WebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if e := fn(w, r); e != nil { // e is *WebError
 		ctx := r.Context()
-		lg := aelog.New(ctx)
+		lg := ae.NewLog(ctx)
 		m := meditation()
 
 		// Log for the site admin. No logging occurs if no error is passed.
