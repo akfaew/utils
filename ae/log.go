@@ -8,8 +8,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/andyfusniak/stackdriver-gae-logrus-plugin"
 	"github.com/sirupsen/logrus"
+
+	"github.com/akfaew/utils/ae/stackdriver-gae-logrus-plugin"
 )
 
 var trimprefix = ""
