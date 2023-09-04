@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bytes"
@@ -27,10 +27,10 @@ type eoCreateContactParams struct {
 }
 
 // https://emailoctopus.com/api-documentation/lists/create-contact
-func (eo *EmailOctopus) Add(ctx context.Context, profile *Profile) error {
+func (eo *EmailOctopus) Add(ctx context.Context, email string) error {
 	params := eoCreateContactParams{
 		APIKey: eo.APIKey,
-		Email:  profile.Email,
+		Email:  email,
 		Status: "SUBSCRIBED",
 	}
 	p, err := json.Marshal(params)
@@ -55,8 +55,8 @@ func (eo *EmailOctopus) Add(ctx context.Context, profile *Profile) error {
 }
 
 // https://emailoctopus.com/api-documentation/lists/create-contact
-func (eo *EmailOctopus) Remove(ctx context.Context, profile *Profile) error {
-	id := fmt.Sprintf("%x", md5.Sum([]byte(strings.ToLower(profile.Email))))
+func (eo *EmailOctopus) Remove(ctx context.Context, email string) error {
+	id := fmt.Sprintf("%x", md5.Sum([]byte(strings.ToLower(email))))
 
 	u := fmt.Sprintf(eoapi+"lists/%s/contacts/%s?api_key=%s",
 		eo.ListID, id, eo.APIKey)
