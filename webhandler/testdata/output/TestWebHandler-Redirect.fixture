@@ -1,0 +1,12 @@
+Code: 302
+
+<a href="/redirect_target">Found</a>.
+
+<body>
+  Base template
+
+  
+<meta>
+  <title>Template Title</title>
+</meta>
+</body>
