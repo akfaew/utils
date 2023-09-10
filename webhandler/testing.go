@@ -6,9 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akfaew/test"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
+
+	"github.com/akfaew/utils/fixture"
 )
 
 type WebTestResponse struct {
@@ -55,7 +56,7 @@ func (r *WebTestResponse) FixtureExtra(extra string) {
 	r.t.Helper()
 
 	code := fmt.Sprintf("Code: %d\n\n", r.ResponseRecorder.Code)
-	test.FixtureExtra(r.t, extra, code+r.Body())
+	fixture.FixtureExtra(r.t, extra, code+r.Body())
 }
 
 func (r *WebTestResponse) Status(want int) {

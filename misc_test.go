@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/akfaew/test"
 	"github.com/stretchr/testify/require"
+
+	"github.com/akfaew/utils/fixture"
 )
 
 func TestSlash(t *testing.T) {
@@ -38,7 +39,7 @@ func TestRandEmail(t *testing.T) {
 func TestCrc32(t *testing.T) {
 	for _, s := range []string{"a", "", "://!%$"} {
 		t.Run(Crc32(s), func(t *testing.T) {
-			test.Fixture(t, fmt.Sprintf("%s -> %s\n", s, Crc32(s)))
+			fixture.Fixture(t, fmt.Sprintf("%s -> %s\n", s, Crc32(s)))
 		})
 	}
 }
