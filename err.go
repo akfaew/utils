@@ -4,24 +4,43 @@ import (
 	"fmt"
 )
 
-// Errorfc creates a new error and wraps it with context information using Errorc().
-func Errorfc(format string, a ...interface{}) error {
-	file, line := logctx(1)
-	return fmt.Errorf("%s:%d %s", trim(file), line, fmt.Errorf(format, a...))
+type UserError struct {
+	Err         error
+	UserMessage string
 }
 
-// Errorc wraps the error, if not nil, with context information, such as the file name
-// and line. If err is found in exclude, then it is returned unchanged.
-func Errorc(err error, exclude ...error) error {
+func (e UserError) Error() string {
+	return e.Err.Error()
+}
+
+func (e UserError) Unwrap() error {
+	return e.Err
+}
+
+func (e UserError) Message() string {
+	return e.UserMessage
+}
+
+func UserErrorfc(err error, format string, a ...interface{}) error {
+	file, line := logctx(1)
+
+	return UserError{
+		Err:         fmt.Errorf("%s:%d %w", trim(file), line, err),
+		UserMessage: fmt.Sprintf(format, a...),
+	}
+}
+
+func Errorfc(format string, a ...interface{}) error {
+	file, line := logctx(1)
+
+	return fmt.Errorf("%s:%d %w", trim(file), line, fmt.Errorf(format, a...))
+}
+
+func Errorc(err error) error {
 	if err == nil {
 		return nil
 	}
-
-	for _, e := range exclude {
-		if err == e {
-			return err
-		}
-	}
 	file, line := logctx(1)
-	return fmt.Errorf("%s:%d %s", trim(file), line, err)
+
+	return fmt.Errorf("%s:%d %w", trim(file), line, err)
 }

@@ -2,23 +2,30 @@ package utils
 
 import (
 	"errors"
-	"strings"
+	"os"
 	"testing"
 
-	"github.com/akfaew/test"
+	"github.com/stretchr/testify/require"
 )
 
 func TestErrorc(t *testing.T) {
-	test.True(t, Errorc(nil) == nil)
+	t.Run("nil", func(t *testing.T) {
+		require.True(t, Errorc(nil) == nil)
+	})
 
-	e := Errorc(errors.New("oups")).Error()
-	test.True(t, strings.HasSuffix(e, "utils/err_test.go:14 oups"))
+	t.Run("path", func(t *testing.T) {
+		err := Errorc(errors.New("oups"))
+		t.Logf("err.Error() = %s", err.Error())
+		require.Regexp(t, `utils/err_test.go:\d+ oups`, err.Error())
+	})
 
-	// two different errors with the same message
-	e = Errorc(errors.New("oups"), errors.New("oups")).Error()
-	test.True(t, strings.HasSuffix(e, "utils/err_test.go:18 oups"))
+	t.Run("is", func(t *testing.T) {
+		err := Errorc(os.ErrNotExist)
+		require.True(t, errors.Is(err, os.ErrNotExist))
+	})
 
-	// two identical errors
-	ee := errors.New("oups")
-	test.EqualStr(t, Errorc(ee, ee).Error(), "oups")
+	t.Run("nice", func(t *testing.T) {
+		err := UserErrorfc(os.ErrNotExist, "Something bad happened %d", 5)
+		require.True(t, errors.Is(err, os.ErrNotExist))
+	})
 }
