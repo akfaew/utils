@@ -10,9 +10,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"reflect"
 	"strings"
 
@@ -37,7 +37,7 @@ type Conf struct {
 
 // Init loads the RSA Public Key from publicKeyPath into Conf.
 func (c *Conf) Init(publicKeyPath string) error {
-	pubPEM, err := ioutil.ReadFile(publicKeyPath)
+	pubPEM, err := os.ReadFile(publicKeyPath)
 	if err != nil {
 		return err
 	}
@@ -200,7 +200,7 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*htt
 	}
 	defer resp.Body.Close()
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
