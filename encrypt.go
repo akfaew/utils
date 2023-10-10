@@ -22,7 +22,7 @@ func genkey() string {
 	return hex.EncodeToString(randbytes)
 }
 
-func NewKey(enckey string) (ret Key) {
+func ParseKey(enckey string) (ret Key) {
 	if newkey, err := hex.DecodeString(enckey); err != nil {
 		log.Fatal(err)
 	} else if len(newkey) != 32 {
@@ -31,49 +31,49 @@ func NewKey(enckey string) (ret Key) {
 		return newkey
 	}
 
-	return nil
+	return nil // this will never be reached
 }
 
-func (key Key) Encrypt(text []byte) ([]byte, error) {
+func (key Key) Encrypt(text string) []byte {
 	c, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
-	return gcm.Seal(nonce, nonce, text, nil), nil
+	return gcm.Seal(nonce, nonce, []byte(text), nil)
 }
 
-func (key Key) Decrypt(ciphertext []byte) ([]byte, error) {
+func (key Key) Decrypt(ciphertext []byte) string {
 	c, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
 	gcm, err := cipher.NewGCM(c)
 	if err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
 	nonceSize := gcm.NonceSize()
 	if len(ciphertext) < nonceSize {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
 	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
 	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return nil, Errorc(err)
+		log.Fatalf("error: %v", err)
 	}
 
-	return plaintext, nil
+	return string(plaintext)
 }

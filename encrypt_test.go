@@ -7,16 +7,24 @@ import (
 )
 
 func TestEncrypt(t *testing.T) {
-	key := NewKey("303132333435363738393031323" +
+	key := ParseKey("303132333435363738393031323" +
 		"3343536373839303132333435363738393031")
 
-	plain := []byte("sometext")
+	t.Run("sometext", func(t *testing.T) {
+		plain := "sometext"
 
-	enc, err := key.Encrypt(plain)
-	require.NoError(t, err)
+		enc := key.Encrypt(plain)
+		dec := key.Decrypt(enc)
 
-	dec, err := key.Decrypt(enc)
-	require.NoError(t, err)
+		require.Equal(t, dec, plain)
+	})
 
-	require.Equal(t, dec, plain)
+	t.Run("empty", func(t *testing.T) {
+		plain := ""
+
+		enc := key.Encrypt(plain)
+		dec := key.Decrypt(enc)
+
+		require.Equal(t, dec, plain)
+	})
 }
