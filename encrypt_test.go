@@ -27,4 +27,10 @@ func TestEncrypt(t *testing.T) {
 
 		require.Equal(t, dec, plain)
 	})
+
+	t.Run("very empty", func(t *testing.T) {
+		dec := key.Decrypt([]byte{})
+
+		require.Equal(t, dec, "")
+	})
 }

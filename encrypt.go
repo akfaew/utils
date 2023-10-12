@@ -24,7 +24,7 @@ func genkey() string {
 
 func ParseKey(enckey string) (ret Key) {
 	if newkey, err := hex.DecodeString(enckey); err != nil {
-		log.Fatal(err)
+		log.Fatalf("error: %v", err)
 	} else if len(newkey) != 32 {
 		log.Fatalf("Encoded key must be of length 32, has length: %d", len(newkey))
 	} else {
@@ -54,6 +54,10 @@ func (key Key) Encrypt(text string) []byte {
 }
 
 func (key Key) Decrypt(ciphertext []byte) string {
+	if len(ciphertext) == 0 {
+		return ""
+	}
+
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		log.Fatalf("error: %v", err)
