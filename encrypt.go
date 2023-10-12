@@ -66,7 +66,8 @@ func (key Key) Decrypt(ciphertext []byte) string {
 
 	nonceSize := gcm.NonceSize()
 	if len(ciphertext) < nonceSize {
-		log.Fatalf("error: %v", err)
+		log.Fatalf("error: len(ciphertext) < nonceSize: %d < %d",
+			len(ciphertext), nonceSize)
 	}
 
 	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
