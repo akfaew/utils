@@ -39,7 +39,7 @@ func WebErrorInternal(err error) *WebError {
 	return &WebError{
 		Code:    http.StatusInternalServerError,
 		Error:   err,
-		Message: "Internal server error",
+		Message: "Internal server error - something went wrong, try again later",
 	}
 }
 
