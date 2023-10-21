@@ -34,7 +34,7 @@ func ParseKey(enckey string) (ret Key) {
 	return nil // this will never be reached
 }
 
-func (key Key) Encrypt(text string) []byte {
+func (key Key) Encrypt(text []byte) []byte {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -50,12 +50,12 @@ func (key Key) Encrypt(text string) []byte {
 		log.Fatalf("error: %v", err)
 	}
 
-	return gcm.Seal(nonce, nonce, []byte(text), nil)
+	return gcm.Seal(nonce, nonce, text, nil)
 }
 
-func (key Key) Decrypt(ciphertext []byte) string {
+func (key Key) Decrypt(ciphertext []byte) []byte {
 	if len(ciphertext) == 0 {
-		return ""
+		return nil
 	}
 
 	c, err := aes.NewCipher(key)
@@ -80,5 +80,5 @@ func (key Key) Decrypt(ciphertext []byte) string {
 		log.Fatalf("error: %v", err)
 	}
 
-	return string(plaintext)
+	return plaintext
 }
