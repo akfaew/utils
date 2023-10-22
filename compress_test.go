@@ -43,4 +43,14 @@ func TestCompress(t *testing.T) {
 
 		require.Equal(t, dec, plain)
 	})
+
+	t.Run("decompress empty", func(t *testing.T) {
+		var (
+			dec string
+		)
+
+		Decompress([]byte{}, &dec)
+
+		require.Equal(t, dec, "")
+	})
 }

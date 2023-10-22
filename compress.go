@@ -26,6 +26,10 @@ func Compress(data interface{}) []byte {
 }
 
 func Decompress(enc []byte, out interface{}) {
+	if len(enc) == 0 {
+		return
+	}
+
 	gr, err := gzip.NewReader(bytes.NewReader(enc))
 	if err != nil {
 		panic(err)
