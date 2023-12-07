@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/akfaew/utils/ae"
+	"github.com/akfaew/utils/xctc"
 	"github.com/gorilla/mux"
 )
 
@@ -119,14 +120,10 @@ func (fn WebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type xctcKeyType string
-
-const xctcKey xctcKeyType = "xctc"
-
 func WebHandle(r *mux.Router, method string, path string, handler func(w http.ResponseWriter, r *http.Request) *WebError) {
 	// r.Methods(method).Path(path).Handler(WebHandler(handler))
 	wrappedHandler := func(w http.ResponseWriter, r *http.Request) *WebError {
-		ctx := context.WithValue(r.Context(), xctcKey, r.Header.Get("X-Cloud-Trace-Context"))
+		ctx := context.WithValue(r.Context(), xctc.XctcKey, r.Header.Get("X-Cloud-Trace-Context"))
 		return handler(w, r.WithContext(ctx))
 	}
 	r.Methods(method).Path(path).Handler(WebHandler(wrappedHandler))

@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/akfaew/utils/ae/stackdriver-gae-logrus-plugin/middleware"
-
+	"github.com/akfaew/utils/xctc"
 	"github.com/sirupsen/logrus"
 )
 
@@ -128,7 +127,7 @@ func (f *Formatter) Format(e *logrus.Entry) ([]byte, error) {
 		Data:     e.Data,
 	}
 
-	xctc := middleware.XCTC(e.Context)
+	xctc := xctc.XCTC(e.Context)
 	if xctc != "" {
 		traceID, spanID := parseXCloudTraceContext(string(xctc))
 		if traceID != "" && spanID != "" {
