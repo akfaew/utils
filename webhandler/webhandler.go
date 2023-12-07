@@ -2,6 +2,7 @@ package webhandler
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -118,8 +119,17 @@ func (fn WebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type xctcKeyType string
+
+const xctcKey xctcKeyType = "xctc"
+
 func WebHandle(r *mux.Router, method string, path string, handler func(w http.ResponseWriter, r *http.Request) *WebError) {
-	r.Methods(method).Path(path).Handler(WebHandler(handler))
+	// r.Methods(method).Path(path).Handler(WebHandler(handler))
+	wrappedHandler := func(w http.ResponseWriter, r *http.Request) *WebError {
+		ctx := context.WithValue(r.Context(), xctcKey, r.Header.Get("X-Cloud-Trace-Context"))
+		return handler(w, r.WithContext(ctx))
+	}
+	r.Methods(method).Path(path).Handler(WebHandler(wrappedHandler))
 }
 
 // Executor uses webContext() to obtain a list of variables to pass to the underlying html template.
