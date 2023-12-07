@@ -1,10 +1,12 @@
 package webhandler
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/akfaew/utils/ae"
+	"github.com/akfaew/utils/xctc"
 	"github.com/gorilla/mux"
 )
 
@@ -34,5 +36,9 @@ func (fn SimpleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func SimpleHandle(r *mux.Router, method string, path string, handler func(w http.ResponseWriter, r *http.Request) *SimpleError) {
-	r.Methods(method).Path(path).Handler(SimpleHandler(handler))
+	wrappedHandler := func(w http.ResponseWriter, r *http.Request) *SimpleError {
+		ctx := context.WithValue(r.Context(), xctc.XctcKey, r.Header.Get("X-Cloud-Trace-Context"))
+		return handler(w, r.WithContext(ctx))
+	}
+	r.Methods(method).Path(path).Handler(SimpleHandler(wrappedHandler))
 }

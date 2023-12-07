@@ -121,7 +121,6 @@ func (fn WebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func WebHandle(r *mux.Router, method string, path string, handler func(w http.ResponseWriter, r *http.Request) *WebError) {
-	// r.Methods(method).Path(path).Handler(WebHandler(handler))
 	wrappedHandler := func(w http.ResponseWriter, r *http.Request) *WebError {
 		ctx := context.WithValue(r.Context(), xctc.XctcKey, r.Header.Get("X-Cloud-Trace-Context"))
 		return handler(w, r.WithContext(ctx))
