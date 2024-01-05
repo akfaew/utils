@@ -6,10 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"hash/crc32"
+	"io/fs"
 	"math/rand"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Slash(text string) (string, string) {
@@ -45,4 +48,40 @@ func Dump(path string, what interface{}) error {
 	}
 
 	return nil
+}
+
+func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
+	entries, err := os.ReadDir(dirname)
+	if err != nil {
+		return nil, Errorc(err)
+	}
+
+	// Create a slice of struct that includes os.DirEntry and modification time
+	type entryWithTime struct {
+		entry   fs.DirEntry
+		modTime time.Time
+	}
+
+	entryWrappers := make([]entryWithTime, 0, len(entries))
+
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			return nil, Errorc(err)
+		}
+		entryWrappers = append(entryWrappers, entryWithTime{entry: entry, modTime: info.ModTime()})
+	}
+
+	// Sort the entries by modification time
+	sort.Slice(entryWrappers, func(i, j int) bool {
+		return entryWrappers[i].modTime.Before(entryWrappers[j].modTime)
+	})
+
+	// Extract sorted os.DirEntry from the wrappers
+	sortedEntries := make([]fs.DirEntry, len(entries))
+	for i, wrapper := range entryWrappers {
+		sortedEntries[i] = wrapper.entry
+	}
+
+	return sortedEntries, nil
 }
