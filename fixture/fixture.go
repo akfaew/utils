@@ -83,6 +83,8 @@ func FixtureExtra(t *testing.T, extra string, data interface{}) {
 		t.Fatalf("Error reading file %q: %v", path, err)
 	}
 
+	// XXX https://github.com/a-h/templ/blob/main/generator/htmldiff/diff.go
+	// XXX https://templ.guide/core-concepts/testing/ - htmldiff ?
 	if !bytes.Equal(got, want) {
 		if err := os.WriteFile("/tmp/got", got, permissions); err != nil {
 			t.Fatalf("Error writing file /tmp/got: %v", err)
