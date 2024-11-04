@@ -60,7 +60,7 @@ func (log *Log) DebugJSON(v interface{}) {
 	if b, err := json.MarshalIndent(v, "", "\t"); err != nil {
 		log.Entry.Debugf("json.MarshalIndent(): err=%v", err)
 	} else {
-		log.Entry.Debugf(string(b))
+		log.Entry.Debugf("%s", string(b))
 	}
 }
 

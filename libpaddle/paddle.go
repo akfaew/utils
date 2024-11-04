@@ -44,12 +44,12 @@ func (c *Conf) Init(publicKeyPath string) error {
 
 	block, _ := pem.Decode([]byte(pubPEM))
 	if block == nil {
-		return fmt.Errorf("failed to parse PEM block containing the public key")
+		return errors.New("failed to parse PEM block containing the public key")
 	}
 
 	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		return fmt.Errorf("failed to parse DER encoded public key: " + err.Error())
+		return errors.New("failed to parse DER encoded public key: " + err.Error())
 	}
 
 	switch pub := pub.(type) {
