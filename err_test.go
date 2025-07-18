@@ -29,3 +29,10 @@ func TestErrorc(t *testing.T) {
 		require.True(t, errors.Is(err, os.ErrNotExist))
 	})
 }
+
+func TestRootCause(t *testing.T) {
+	x := errors.New("x")
+	a := Errorc(x)
+	b := Errorc(a)
+	require.Equal(t, x, RootCause(b))
+}

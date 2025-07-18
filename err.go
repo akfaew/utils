@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -43,4 +44,14 @@ func Errorc(err error) error {
 	file, line := logctx(1)
 
 	return fmt.Errorf("%s:%d %w", trim(file), line, err)
+}
+
+func RootCause(err error) error {
+	for {
+		unwrapped := errors.Unwrap(err)
+		if unwrapped == nil {
+			return err
+		}
+		err = unwrapped
+	}
 }
