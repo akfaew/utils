@@ -63,7 +63,7 @@ func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
 		modTime time.Time
 	}
 
-	entryWrappers := make([]entryWithTime, 0, len(entries))
+	entryWrappers := []entryWithTime{}
 
 	for _, entry := range entries {
 		info, err := entry.Info()
