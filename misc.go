@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/fs"
-	"math/rand"
+	rand "math/rand/v2"
 	"os"
 	"slices"
 	"strconv"
@@ -18,11 +18,11 @@ import (
 )
 
 func Slash(text string) (string, string) {
-	res := strings.SplitN(text, "/", 2)
-	if len(res) == 1 {
-		return res[0], ""
+	before, after, found := strings.Cut(text, "/")
+	if !found {
+		return before, ""
 	}
-	return res[0], res[1]
+	return before, after
 }
 
 // A simple sum for naming fixture files in tests, e.g. based on an URL.
