@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/fs"
-	rand "math/rand/v2"
+	"math/rand/v2"
 	"os"
 	"slices"
 	"strings"
