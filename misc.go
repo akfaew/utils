@@ -2,17 +2,14 @@ package utils
 
 import (
 	"cmp"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"hash/crc32"
 	"io/fs"
-	"math/rand"
+	rand "math/rand/v2"
 	"os"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -33,13 +30,7 @@ func Crc32(str string) string {
 // Generate a random string to append to emails, so that Gmail doesn't clump
 // them into "conversations".
 func RandEmail() string {
-	randomValue := strconv.Itoa(rand.Int())
-
-	hasher := md5.New()
-	hasher.Write([]byte(randomValue))
-	md5Hash := hex.EncodeToString(hasher.Sum(nil))
-
-	return md5Hash[:len(md5Hash)/2]
+	return fmt.Sprintf("%016x", rand.Uint64())
 }
 
 func Dump(path string, what any) error {
