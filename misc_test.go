@@ -43,3 +43,33 @@ func TestCrc32(t *testing.T) {
 		})
 	}
 }
+
+func TestUniq(t *testing.T) {
+	t.Run("ints", func(t *testing.T) {
+		in := []int{3, 1, 2, 3, 2, 1}
+		original := append([]int(nil), in...)
+
+		out := Uniq(in)
+
+		require.Equal(t, []int{1, 2, 3}, out)
+		require.Equal(t, original, in)
+	})
+
+	t.Run("strings", func(t *testing.T) {
+		in := []string{"b", "a", "b", "c", "a", "c"}
+		original := append([]string(nil), in...)
+
+		out := Uniq(in)
+
+		require.Equal(t, []string{"a", "b", "c"}, out)
+		require.Equal(t, original, in)
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		var in []int
+		out := Uniq(in)
+
+		require.Empty(t, out)
+		require.Nil(t, in)
+	})
+}
