@@ -6,6 +6,10 @@ fmt:
 lint:
 	golangci-lint run
 
+updatelint:
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
+
+
 test: fmt lint
 	go test $(TEST_ARGS) ./...
 
