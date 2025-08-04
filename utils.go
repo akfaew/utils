@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -13,7 +14,7 @@ func Init(path string) {
 		_, path, _, _ = runtime.Caller(1)
 	}
 
-	trimprefix = path[:strings.LastIndex(path, "/")+1]
+	trimprefix = filepath.Dir(path) + string(filepath.Separator)
 }
 
 func trim(path string) string {
