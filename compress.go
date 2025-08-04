@@ -7,7 +7,7 @@ import (
 	msgpack "github.com/vmihailenco/msgpack/v5"
 )
 
-func Compress(data interface{}) []byte {
+func Compress(data any) []byte {
 	m, err := msgpack.Marshal(data)
 	if err != nil {
 		panic(err)
@@ -25,7 +25,7 @@ func Compress(data interface{}) []byte {
 	return b.Bytes()
 }
 
-func Decompress(enc []byte, out interface{}) {
+func Decompress(enc []byte, out any) {
 	if len(enc) == 0 {
 		return
 	}

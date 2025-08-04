@@ -111,7 +111,7 @@ func NewCheckoutClient(ctx context.Context, client *http.Client) *Client {
 
 // addOptions adds the parameters in opt as URL query parameters to s. opt
 // must be a struct whose fields may contain "url" tags.
-func addOptions(s string, opt interface{}) (string, error) {
+func addOptions(s string, opt any) (string, error) {
 	v := reflect.ValueOf(opt)
 	if v.Kind() == reflect.Ptr && v.IsNil() {
 		return s, nil
@@ -136,7 +136,7 @@ func addOptions(s string, opt interface{}) (string, error) {
 // Relative URLs should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
-func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequest(method, urlStr string, body any) (*http.Request, error) {
 	if !strings.HasSuffix(c.baseURL.Path, "/") {
 		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
 	}
@@ -177,7 +177,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 //
 // The provided ctx must be non-nil. If it is canceled or times out,
 // ctx.Err() will be returned.
-func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) Do(ctx context.Context, req *http.Request, v any) (*http.Response, error) {
 	resp, err := c.client.Do(req)
 	if err != nil {
 		// If we got an error, and the context has been canceled,

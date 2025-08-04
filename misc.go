@@ -42,7 +42,7 @@ func RandEmail() string {
 	return md5Hash[:len(md5Hash)/2]
 }
 
-func Dump(path string, what interface{}) error {
+func Dump(path string, what any) error {
 	if b, err := json.MarshalIndent(what, "", "\t"); err != nil {
 		return Errorc(err)
 	} else if err := os.WriteFile(path, b, 0644); err != nil {

@@ -45,7 +45,7 @@ func makeFixturePath(t *testing.T, extra string) string {
 // If 'data' is a string it gets written verbatim, otherwise it's json-encoded.
 //
 // The filename of the fixture is generated from the test name. To use multiple fixtures in one test see FixtureExtra()
-func Fixture(t *testing.T, data interface{}) {
+func Fixture(t *testing.T, data any) {
 	t.Helper()
 
 	FixtureExtra(t, "", data)
@@ -56,7 +56,7 @@ func Fixture(t *testing.T, data interface{}) {
 // If 'data' is a string it gets written verbatim, otherwise it's json-encoded.
 //
 // The filename of the fixture is generated from the test name with 'extra' appended.
-func FixtureExtra(t *testing.T, extra string, data interface{}) {
+func FixtureExtra(t *testing.T, extra string, data any) {
 	t.Helper()
 
 	// Write strings verbatim, otherwise json-encode.
@@ -104,7 +104,7 @@ func InputFixture(t *testing.T, filename string) []byte {
 }
 
 // InputFixtureJson returns the contents of a json fixture file, and unmarshals it
-func InputFixtureJson(t *testing.T, filename string, v interface{}) {
+func InputFixtureJson(t *testing.T, filename string, v any) {
 	t.Helper()
 
 	data := InputFixture(t, filename)

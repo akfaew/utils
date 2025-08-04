@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var ErrorContextFunc func(message, meditation string) interface{} = nil
+var ErrorContextFunc func(message, meditation string) any = nil
 
 type WebHandler func(http.ResponseWriter, *http.Request) *WebError
 
@@ -29,7 +29,7 @@ type WebError struct {
 	Message string // for the user
 }
 
-func WebErrorf(code int, err error, format string, v ...interface{}) *WebError {
+func WebErrorf(code int, err error, format string, v ...any) *WebError {
 	return &WebError{
 		Code:    code,
 		Error:   err,
@@ -45,7 +45,7 @@ func WebErrorInternal(err error) *WebError {
 	}
 }
 
-func WebErrorInternalf(err error, format string, v ...interface{}) *WebError {
+func WebErrorInternalf(err error, format string, v ...any) *WebError {
 	return &WebError{
 		Code:    http.StatusInternalServerError,
 		Error:   err,
@@ -101,7 +101,7 @@ func (fn WebHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		buf := new(bytes.Buffer)
-		var vars interface{}
+		var vars any
 		if ErrorContextFunc != nil {
 			vars = ErrorContextFunc(e.Message, m)
 		}
@@ -129,7 +129,7 @@ func WebHandle(r *mux.Router, method string, path string, handler func(w http.Re
 }
 
 // Executor uses webContext() to obtain a list of variables to pass to the underlying html template.
-func (tmpl *WebTemplate) Executor(webContext func(http.ResponseWriter, *http.Request, *WebTemplate) (interface{}, *WebError)) func(http.ResponseWriter, *http.Request) *WebError {
+func (tmpl *WebTemplate) Executor(webContext func(http.ResponseWriter, *http.Request, *WebTemplate) (any, *WebError)) func(http.ResponseWriter, *http.Request) *WebError {
 	return func(w http.ResponseWriter, r *http.Request) *WebError {
 		// Get the web context
 		vars, weberr := webContext(w, r, tmpl)

@@ -154,7 +154,7 @@ func phpserialize(form url.Values) []byte {
 }
 
 // https://paddle.com/docs/reference-verifying-webhooks/
-func ValidatePayload(r *http.Request, pubkey *rsa.PublicKey) (interface{}, error) {
+func ValidatePayload(r *http.Request, pubkey *rsa.PublicKey) (any, error) {
 	payload := map[string]string{}
 
 	// Get the p_signature parameter and base64 decode it.
