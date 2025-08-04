@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	ErrNoCronHeader     = errors.New("Cron request does not have the X-Appengine-Cron header")
-	ErrNoTasknameHeader = errors.New("Task request does not have the X-Appengine-Taskname header")
+	ErrNoCronHeader     = errors.New("cron request does not have the X-Appengine-Cron header")
+	ErrNoTasknameHeader = errors.New("task request does not have the X-Appengine-Taskname header")
 )
 
 func ValidateCron(r *http.Request) error {

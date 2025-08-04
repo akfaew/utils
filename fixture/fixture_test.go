@@ -52,7 +52,7 @@ func Test_Fixture(t *testing.T) {
 		require.False(t, Regen())
 		Fixture(t, b)
 
-		os.Remove(makeFixturePath(t, ""))
+		require.NoError(t, os.Remove(makeFixturePath(t, "")))
 	})
 	*regen = r
 }

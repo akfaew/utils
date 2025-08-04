@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-var ErrCountryDoesNotExist = errors.New("Country does not exist")
+var ErrCountryDoesNotExist = errors.New("country does not exist")
 
 type Price struct {
 	Gross float64 `json:"gross"`

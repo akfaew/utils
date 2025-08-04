@@ -30,7 +30,7 @@ func Regen() bool {
 func makeFixturePath(t *testing.T, extra string) string {
 	t.Helper()
 
-	name := strings.Replace(t.Name(), "/", "-", -1)
+	name := strings.ReplaceAll(t.Name(), "/", "-")
 	path := FixtureOutputPath + name
 	if extra != "" {
 		path += "-" + extra

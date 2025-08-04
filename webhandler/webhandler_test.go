@@ -16,11 +16,12 @@ var redirect = ParseTemplate("base.html", "simple.html")
 var nobase = ParseTemplate("nobase.html")
 
 func webContext(w http.ResponseWriter, r *http.Request, tmpl *WebTemplate) (any, *WebError) {
-	if tmpl == failure {
+	switch tmpl {
+	case failure:
 		return nil, WebErrorf(http.StatusInternalServerError, fmt.Errorf("ooups"), "User error")
-	} else if tmpl == nolog {
+	case nolog:
 		return nil, WebErrorf(http.StatusInternalServerError, nil, "")
-	} else if tmpl == redirect {
+	case redirect:
 		http.Redirect(w, r, "/redirect_target", http.StatusFound)
 	}
 
