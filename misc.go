@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"cmp"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -86,4 +87,8 @@ func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
 	}
 
 	return sortedEntries, nil
+}
+
+func Uniq[T cmp.Ordered](s []T) []T {
+	return slices.Compact(slices.Sorted(slices.Values(s)))
 }
