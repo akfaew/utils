@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"io/fs"
@@ -66,7 +67,9 @@ func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
 
 	for _, entry := range entries {
 		info, err := entry.Info()
-		if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			continue // file got deleted while we were working
+		} else if err != nil {
 			return nil, Errorc(err)
 		}
 		entryWrappers = append(entryWrappers, entryWithTime{entry: entry, modTime: info.ModTime()})
