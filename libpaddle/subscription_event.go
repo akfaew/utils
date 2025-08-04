@@ -7,9 +7,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"net/url"
-	"sort"
+	"slices"
 	"time"
 )
 
@@ -138,11 +139,8 @@ type SubscriptionPaymentFailed struct {
 }
 
 func phpserialize(form url.Values) []byte {
-	var keys []string
-	for k := range form {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := slices.Collect(maps.Keys(form))
+	slices.Sort(keys)
 
 	serialized := fmt.Sprintf("a:%d:{", len(keys))
 	for _, k := range keys {
