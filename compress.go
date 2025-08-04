@@ -34,7 +34,11 @@ func Decompress(enc []byte, out any) {
 	if err != nil {
 		panic(err)
 	}
-	defer gr.Close()
+	defer func() {
+		if err := gr.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	if err := msgpack.NewDecoder(gr).Decode(out); err != nil {
 		panic(err)

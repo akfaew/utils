@@ -51,7 +51,9 @@ func (eo *EmailOctopus) Add(ctx context.Context, email string) error {
 	if err != nil {
 		return utils.Errorc(err)
 	}
-	resp.Body.Close()
+	if err := resp.Body.Close(); err != nil {
+		return utils.Errorc(err)
+	}
 
 	return nil
 }
@@ -72,7 +74,9 @@ func (eo *EmailOctopus) Remove(ctx context.Context, email string) error {
 	if err != nil {
 		return utils.Errorc(err)
 	}
-	resp.Body.Close()
+	if err := resp.Body.Close(); err != nil {
+		return utils.Errorc(err)
+	}
 
 	return nil
 }

@@ -177,8 +177,8 @@ func (c *Client) NewRequest(method, urlStr string, body any) (*http.Request, err
 //
 // The provided ctx must be non-nil. If it is canceled or times out,
 // ctx.Err() will be returned.
-func (c *Client) Do(ctx context.Context, req *http.Request, v any) (*http.Response, error) {
-	resp, err := c.client.Do(req)
+func (c *Client) Do(ctx context.Context, req *http.Request, v any) (resp *http.Response, err error) {
+	resp, err = c.client.Do(req)
 	if err != nil {
 		// If we got an error, and the context has been canceled,
 		// the context's error is probably more useful.
@@ -198,19 +198,26 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v any) (*http.Respon
 
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil {
+			if cerr := resp.Body.Close(); err == nil && cerr != nil {
+				err = cerr
+			}
+		}
+	}()
 
-	data, err := io.ReadAll(resp.Body)
+	var data []byte
+	data, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := checkError(resp, data); err != nil {
+	if err = checkError(resp, data); err != nil {
 		return resp, err
 	}
 
 	if v != nil {
-		if err := json.Unmarshal(data, v); err != nil {
+		if err = json.Unmarshal(data, v); err != nil {
 			return resp, fmt.Errorf("err=%v, data=%v", err, string(data))
 		}
 	}
