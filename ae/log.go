@@ -46,17 +46,17 @@ func logctx(skip int) (file string, line int) {
 	return
 }
 
-func (log *Log) Debugf(format string, a ...interface{}) {
+func (log *Log) Debugf(format string, a ...any) {
 	log.Entry.Debugf(format, a...)
 }
 
-func (log *Log) Debugfd(format string, a ...interface{}) {
+func (log *Log) Debugfd(format string, a ...any) {
 	file, line := logctx(1)
 
 	log.Entry.Debugf("%s:%d %s", file, line, fmt.Sprintf(format, a...))
 }
 
-func (log *Log) DebugJSON(v interface{}) {
+func (log *Log) DebugJSON(v any) {
 	if b, err := json.MarshalIndent(v, "", "\t"); err != nil {
 		log.Entry.Debugf("json.MarshalIndent(): err=%v", err)
 	} else {
@@ -64,31 +64,31 @@ func (log *Log) DebugJSON(v interface{}) {
 	}
 }
 
-func (log *Log) Infof(format string, a ...interface{}) {
+func (log *Log) Infof(format string, a ...any) {
 	log.Entry.Infof(format, a...)
 }
 
-func (log *Log) Infofd(format string, a ...interface{}) {
+func (log *Log) Infofd(format string, a ...any) {
 	file, line := logctx(1)
 
 	log.Entry.Infof("%s:%d %s", file, line, fmt.Sprintf(format, a...))
 }
 
-func (log *Log) Warningf(format string, a ...interface{}) {
+func (log *Log) Warningf(format string, a ...any) {
 	log.Entry.Warningf(format, a...)
 }
 
-func (log *Log) Warningfd(format string, a ...interface{}) {
+func (log *Log) Warningfd(format string, a ...any) {
 	file, line := logctx(1)
 
 	log.Entry.Warningf("%s:%d %s", file, line, fmt.Sprintf(format, a...))
 }
 
-func (log *Log) Errorf(format string, a ...interface{}) {
+func (log *Log) Errorf(format string, a ...any) {
 	log.Entry.Errorf(format, a...)
 }
 
-func (log *Log) Errorfd(format string, a ...interface{}) {
+func (log *Log) Errorfd(format string, a ...any) {
 	file, line := logctx(1)
 
 	log.Entry.Errorf("%s:%d %s", file, line, fmt.Sprintf(format, a...))

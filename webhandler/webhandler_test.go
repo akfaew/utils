@@ -15,7 +15,7 @@ var nolog = ParseTemplate("base.html", "simple.html")
 var redirect = ParseTemplate("base.html", "simple.html")
 var nobase = ParseTemplate("nobase.html")
 
-func webContext(w http.ResponseWriter, r *http.Request, tmpl *WebTemplate) (interface{}, *WebError) {
+func webContext(w http.ResponseWriter, r *http.Request, tmpl *WebTemplate) (any, *WebError) {
 	if tmpl == failure {
 		return nil, WebErrorf(http.StatusInternalServerError, fmt.Errorf("ooups"), "User error")
 	} else if tmpl == nolog {
@@ -31,7 +31,7 @@ func webContext(w http.ResponseWriter, r *http.Request, tmpl *WebTemplate) (inte
 	}, nil
 }
 
-func errorContext(message, meditation string) interface{} {
+func errorContext(message, meditation string) any {
 	return struct {
 		Message string
 	}{

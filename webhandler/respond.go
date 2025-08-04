@@ -7,7 +7,7 @@ import (
 	"github.com/akfaew/utils"
 )
 
-func WriteResponse(w http.ResponseWriter, data interface{}) error {
+func WriteResponse(w http.ResponseWriter, data any) error {
 	w.Header().Set("Content-Type", "application/json")
 	if data == nil {
 		// Write has other side effects, and we don't want to write "null".

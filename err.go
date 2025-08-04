@@ -22,7 +22,7 @@ func (e UserError) Message() string {
 	return e.UserMessage
 }
 
-func UserErrorfc(err error, format string, a ...interface{}) error {
+func UserErrorfc(err error, format string, a ...any) error {
 	file, line := logctx(1)
 
 	return UserError{
@@ -31,7 +31,7 @@ func UserErrorfc(err error, format string, a ...interface{}) error {
 	}
 }
 
-func Errorfc(format string, a ...interface{}) error {
+func Errorfc(format string, a ...any) error {
 	file, line := logctx(1)
 
 	return fmt.Errorf("%s:%d %w", trim(file), line, fmt.Errorf(format, a...))
