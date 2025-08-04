@@ -10,7 +10,7 @@ import (
 	"io/fs"
 	"math/rand"
 	"os"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -51,20 +51,19 @@ func Dump(path string, what interface{}) error {
 	return nil
 }
 
+// ReadDirByDate reads the directory and returns entries sorted by modification time (ascending: oldest first).
 func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
 	entries, err := os.ReadDir(dirname)
 	if err != nil {
 		return nil, Errorc(err)
 	}
 
-	// Create a slice of struct that includes os.DirEntry and modification time
 	type entryWithTime struct {
 		entry   fs.DirEntry
 		modTime time.Time
 	}
 
-	entryWrappers := []entryWithTime{}
-
+	entryWrappers := make([]entryWithTime, 0, len(entries))
 	for _, entry := range entries {
 		info, err := entry.Info()
 		if errors.Is(err, fs.ErrNotExist) {
@@ -75,13 +74,13 @@ func ReadDirByDate(dirname string) ([]fs.DirEntry, error) {
 		entryWrappers = append(entryWrappers, entryWithTime{entry: entry, modTime: info.ModTime()})
 	}
 
-	// Sort the entries by modification time
-	sort.Slice(entryWrappers, func(i, j int) bool {
-		return entryWrappers[i].modTime.Before(entryWrappers[j].modTime)
+	// Sort by modification time (ascending)
+	slices.SortFunc(entryWrappers, func(a, b entryWithTime) int {
+		return a.modTime.Compare(b.modTime)
 	})
 
-	// Extract sorted os.DirEntry from the wrappers
-	sortedEntries := make([]fs.DirEntry, len(entries))
+	// Extract sorted entries
+	sortedEntries := make([]fs.DirEntry, len(entryWrappers))
 	for i, wrapper := range entryWrappers {
 		sortedEntries[i] = wrapper.entry
 	}
