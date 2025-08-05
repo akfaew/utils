@@ -9,7 +9,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@latest
+      - name: Set up Go
+        uses: actions/setup-go@latest
+        with:
+          go-version-file: 'go.mod'
       - name: Set up dependencies
         run: sudo apt-get update && sudo apt-get install -y make
       - name: Run make setup
