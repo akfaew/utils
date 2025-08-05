@@ -94,7 +94,7 @@ func FixtureExtra(t *testing.T, extra string, data any) {
 		}
 		s, err := difflib.GetUnifiedDiffString(diff)
 		require.NoError(t, err)
-		t.Fatalf("Fixture mismatch (-want +got):\n%s", s)
+		t.Fatalf("Fixture mismatch (-expected +got):\n%s", s)
 	}
 }
 
