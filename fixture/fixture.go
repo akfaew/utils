@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,10 +85,16 @@ func FixtureExtra(t *testing.T, extra string, data any) {
 	}
 
 	if !bytes.Equal(got, want) {
-		if err := os.WriteFile("/tmp/got", got, permissions); err != nil {
-			t.Fatalf("Error writing file /tmp/got: %v", err)
+		diff := difflib.UnifiedDiff{
+			A:        difflib.SplitLines(string(want)),
+			B:        difflib.SplitLines(string(got)),
+			FromFile: "expected",
+			ToFile:   "got",
+			Context:  3,
 		}
-		t.Fatalf("Error comparing with fixture. See: diff /tmp/got %s", path)
+		s, err := difflib.GetUnifiedDiffString(diff)
+		require.NoError(t, err)
+		t.Fatalf("Fixture mismatch (-expected +got):\n%s", s)
 	}
 }
 
