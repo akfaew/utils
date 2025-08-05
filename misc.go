@@ -15,16 +15,13 @@ import (
 )
 
 func Slash(text string) (string, string) {
-	before, after, found := strings.Cut(text, "/")
-	if !found {
-		return before, ""
-	}
+	before, after, _ := strings.Cut(text, "/")
 	return before, after
 }
 
 // A simple sum for naming fixture files in tests, e.g. based on an URL.
 func Crc32(str string) string {
-	return fmt.Sprintf("%08x", crc32.Checksum([]byte(str), crc32.IEEETable))
+	return fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(str)))
 }
 
 // Generate a random string to append to emails, so that Gmail doesn't clump

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 
@@ -29,7 +30,7 @@ func NewLog(ctx context.Context) *Log {
 func init() {
 	_, path, _, _ := runtime.Caller(1)
 
-	trimprefix = path[:strings.LastIndex(path, "/")+1]
+	trimprefix = filepath.Dir(path) + string(filepath.Separator)
 
 	formatter := stackdriver.GAEStandardFormatter(
 		stackdriver.WithProjectID(os.Getenv("GOOGLE_CLOUD_PROJECT")),
