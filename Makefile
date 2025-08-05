@@ -33,3 +33,5 @@ update:
 
 clean:
 	rm -f coverage.out
+
+setup: updatelint

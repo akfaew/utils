@@ -1,0 +1,19 @@
+name: Run make test
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up dependencies
+        run: sudo apt-get update && sudo apt-get install -y make
+      - name: Run make setup
+        run: make setup
+      - name: Run make test
+        run: make test
+
