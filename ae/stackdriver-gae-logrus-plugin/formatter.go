@@ -93,7 +93,7 @@ func (f *Formatter) Format(e *logrus.Entry) ([]byte, error) {
 	xctc := xctc.XCTC(e.Context)
 	if xctc != "" {
 		trace, err := utils.ParseTraceParent(string(xctc))
-		if err != nil {
+		if err == nil {
 			ee.Trace = fmt.Sprintf("projects/%s/traces/%s", f.projectID, trace.TraceID)
 			ee.SpanID = trace.ParentID
 		}
