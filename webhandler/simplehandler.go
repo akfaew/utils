@@ -37,7 +37,7 @@ func (fn SimpleHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func SimpleHandle(r *mux.Router, method string, path string, handler func(w http.ResponseWriter, r *http.Request) *SimpleError) {
 	wrappedHandler := func(w http.ResponseWriter, r *http.Request) *SimpleError {
-		ctx := context.WithValue(r.Context(), xctc.XctcKey, r.Header.Get("X-Cloud-Trace-Context"))
+		ctx := context.WithValue(r.Context(), xctc.XctcKey, r.Header.Get("Traceparent"))
 		return handler(w, r.WithContext(ctx))
 	}
 	r.Methods(method).Path(path).Handler(SimpleHandler(wrappedHandler))
