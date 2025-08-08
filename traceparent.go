@@ -37,16 +37,26 @@ func ParseTraceParent(header string) (*TraceParent, error) {
 	if err != nil {
 		return nil, Errorfc("invalid version: %w", err)
 	}
-	if string(traceID) == "00000000000000000000000000000000" {
+
+	if _, err := hex.DecodeString(traceID); err != nil {
+		return nil, Errorfc("invalid trace-id: %w", err)
+	}
+	if strings.ToLower(traceID) == "00000000000000000000000000000000" {
 		return nil, Errorfc("trace-id all zero")
 	}
-	if string(parentID) == "0000000000000000" {
+
+	if _, err := hex.DecodeString(parentID); err != nil {
+		return nil, Errorfc("invalid parent-id: %w", err)
+	}
+	if strings.ToLower(parentID) == "0000000000000000" {
 		return nil, Errorfc("parent-id all zero")
 	}
+
 	flags, err := hex.DecodeString(flagsStr)
 	if err != nil {
 		return nil, Errorfc("invalid trace-flags: %w", err)
 	}
+
 	return &TraceParent{
 		Version:    ver[0],
 		TraceID:    strings.ToLower(traceID),

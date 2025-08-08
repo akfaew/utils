@@ -43,6 +43,16 @@ func TestParseTraceParent(t *testing.T) {
 			shouldErr: true,
 		},
 		{
+			name:      "Invalid hex in trace-id",
+			input:     "00-zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz-00f067aa0ba902b7-01",
+			shouldErr: true,
+		},
+		{
+			name:      "Invalid hex in parent-id",
+			input:     "00-4bf92f3577b34da6a3ce929d0e0e4736-zzzzzzzzzzzzzzzz-01",
+			shouldErr: true,
+		},
+		{
 			name:      "Invalid field length",
 			input:     "00-1234-00f067aa0ba902b7-01",
 			shouldErr: true,
