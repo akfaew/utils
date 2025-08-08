@@ -12,6 +12,12 @@ type TraceParent struct {
 	TraceFlags byte   // 1 byte, as int
 }
 
+// IsTraced returns true if the trace is sampled (traced).
+// According to W3C trace context spec, the least significant bit indicates sampling.
+func (tp *TraceParent) IsTraced() bool {
+	return tp.TraceFlags&0x01 != 0
+}
+
 // ParseTraceParent parses a W3C traceparent header string.
 // Returns TraceParent or error on invalid format.
 // https://www.w3.org/TR/trace-context/#version-format

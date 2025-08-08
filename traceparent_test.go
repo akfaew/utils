@@ -75,3 +75,46 @@ func TestParseTraceParent(t *testing.T) {
 		})
 	}
 }
+
+func TestTraceParent_IsTraced(t *testing.T) {
+	tests := []struct {
+		name       string
+		traceFlags byte
+		want       bool
+	}{
+		{
+			name:       "Traced (flags=0x01)",
+			traceFlags: 0x01,
+			want:       true,
+		},
+		{
+			name:       "Not traced (flags=0x00)",
+			traceFlags: 0x00,
+			want:       false,
+		},
+		{
+			name:       "Traced with other flags (flags=0x03)",
+			traceFlags: 0x03,
+			want:       true,
+		},
+		{
+			name:       "Not traced with other flags (flags=0x02)",
+			traceFlags: 0x02,
+			want:       false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tp := &TraceParent{
+				Version:    0x00,
+				TraceID:    "4bf92f3577b34da6a3ce929d0e0e4736",
+				ParentID:   "00f067aa0ba902b7",
+				TraceFlags: tt.traceFlags,
+			}
+			if got := tp.IsTraced(); got != tt.want {
+				t.Errorf("TraceParent.IsTraced() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
