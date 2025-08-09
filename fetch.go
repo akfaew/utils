@@ -16,6 +16,9 @@ func Fetch(ctx context.Context, link string) (string, error) {
 	if err != nil {
 		return "", Errorc(err)
 	}
+	defer func() {
+		_ = data.Body.Close()
+	}()
 
 	body, err := io.ReadAll(data.Body)
 	if err != nil {
