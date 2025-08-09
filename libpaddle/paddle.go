@@ -19,7 +19,7 @@ import (
 	"github.com/google/go-querystring/query"
 )
 
-// Why there are two separate APIs I do not know
+// Why there are two separate APIs, I do not know.
 var defaultBaseURL = "https://vendors.paddle.com/api/2.0/"
 var checkoutBaseURL = "https://checkout.paddle.com/api/2.0/"
 
