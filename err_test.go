@@ -19,6 +19,12 @@ func TestErrorc(t *testing.T) {
 		require.Regexp(t, `utils/err_test.go:\d+ oups`, err.Error())
 	})
 
+	t.Run("format", func(t *testing.T) {
+		err := Errorfc("formatted %d", 7)
+		t.Logf("err.Error() = %s", err.Error())
+		require.Regexp(t, `utils/err_test.go:\d+ formatted 7`, err.Error())
+	})
+
 	t.Run("is", func(t *testing.T) {
 		err := Errorc(os.ErrNotExist)
 		require.True(t, errors.Is(err, os.ErrNotExist))
@@ -26,6 +32,7 @@ func TestErrorc(t *testing.T) {
 
 	t.Run("nice", func(t *testing.T) {
 		err := UserErrorfc(os.ErrNotExist, "Something bad happened %d", 5)
+		require.Regexp(t, `utils/err_test.go:\d+ file does not exist`, err.Error())
 		require.True(t, errors.Is(err, os.ErrNotExist))
 	})
 }
