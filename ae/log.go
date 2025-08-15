@@ -75,28 +75,39 @@ func init() {
 	trimprefix = filepath.Dir(path) + string(filepath.Separator)
 }
 
-func logctx(skip int) (file string, line int) {
-	_, file, line, _ = runtime.Caller(skip + 1)
+func logctx(skip int) (file string, line int, function string) {
+	pc, file, line, _ := runtime.Caller(skip + 1)
 	file = strings.TrimPrefix(file, trimprefix)
+	if fn := runtime.FuncForPC(pc); fn != nil {
+		function = fn.Name()
+	}
 
 	return
 }
 
-type entry struct {
-	Trace       string         `json:"logging.googleapis.com/trace,omitempty"`
-	SpanID      string         `json:"logging.googleapis.com/spanId,omitempty"`
-	Data        map[string]any `json:"data"`
-	Message     string         `json:"message,omitempty"`
-	Severity    string         `json:"severity,omitempty"`
-	HTTPRequest map[string]any `json:"httpRequest,omitempty"`
+type sourceLocation struct {
+	File     string `json:"file"`
+	Line     int    `json:"line"`
+	Function string `json:"function,omitempty"`
 }
 
-func (log *Log) write(severity, msg string) {
+type entry struct {
+	Trace          string          `json:"logging.googleapis.com/trace,omitempty"`
+	SpanID         string          `json:"logging.googleapis.com/spanId,omitempty"`
+	SourceLocation *sourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	Data           map[string]any  `json:"data"`
+	Message        string          `json:"message,omitempty"`
+	Severity       string          `json:"severity,omitempty"`
+	HTTPRequest    map[string]any  `json:"httpRequest,omitempty"`
+}
+
+func (log *Log) write(severity, msg string, sl *sourceLocation) {
 	e := entry{
-		Data:        map[string]any{},
-		Message:     msg,
-		Severity:    severity,
-		HTTPRequest: log.httpRequest,
+		Data:           map[string]any{},
+		Message:        msg,
+		Severity:       severity,
+		HTTPRequest:    log.httpRequest,
+		SourceLocation: sl,
 	}
 
 	for k, v := range log.data {
@@ -120,49 +131,53 @@ func (log *Log) write(severity, msg string) {
 }
 
 func (log *Log) Debugf(format string, a ...any) {
-	log.write("DEBUG", fmt.Sprintf(format, a...))
+	log.write("DEBUG", fmt.Sprintf(format, a...), nil)
 }
 
 func (log *Log) Debugfd(format string, a ...any) {
-	file, line := logctx(1)
+	file, line, function := logctx(1)
+	sl := &sourceLocation{File: file, Line: line, Function: function}
 
-	log.write("DEBUG", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)))
+	log.write("DEBUG", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
 }
 
 func (log *Log) DebugJSON(v any) {
 	if b, err := json.MarshalIndent(v, "", "\t"); err != nil {
-		log.write("DEBUG", fmt.Sprintf("json.MarshalIndent(): err=%v", err))
+		log.write("DEBUG", fmt.Sprintf("json.MarshalIndent(): err=%v", err), nil)
 	} else {
-		log.write("DEBUG", string(b))
+		log.write("DEBUG", string(b), nil)
 	}
 }
 
 func (log *Log) Infof(format string, a ...any) {
-	log.write("INFO", fmt.Sprintf(format, a...))
+	log.write("INFO", fmt.Sprintf(format, a...), nil)
 }
 
 func (log *Log) Infofd(format string, a ...any) {
-	file, line := logctx(1)
+	file, line, function := logctx(1)
+	sl := &sourceLocation{File: file, Line: line, Function: function}
 
-	log.write("INFO", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)))
+	log.write("INFO", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
 }
 
 func (log *Log) Warningf(format string, a ...any) {
-	log.write("WARNING", fmt.Sprintf(format, a...))
+	log.write("WARNING", fmt.Sprintf(format, a...), nil)
 }
 
 func (log *Log) Warningfd(format string, a ...any) {
-	file, line := logctx(1)
+	file, line, function := logctx(1)
+	sl := &sourceLocation{File: file, Line: line, Function: function}
 
-	log.write("WARNING", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)))
+	log.write("WARNING", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
 }
 
 func (log *Log) Errorf(format string, a ...any) {
-	log.write("ERROR", fmt.Sprintf(format, a...))
+	log.write("ERROR", fmt.Sprintf(format, a...), nil)
 }
 
 func (log *Log) Errorfd(format string, a ...any) {
-	file, line := logctx(1)
+	file, line, function := logctx(1)
+	sl := &sourceLocation{File: file, Line: line, Function: function}
 
-	log.write("ERROR", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)))
+	log.write("ERROR", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
 }
