@@ -20,6 +20,8 @@ import (
 var (
 	trimprefix = ""
 	projectID  = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	// serviceName holds the App Engine service name, if available.
+	serviceName = os.Getenv("GAE_SERVICE")
 )
 
 type Log struct {
@@ -112,6 +114,11 @@ func (log *Log) WithUserID(id string) *Log {
 	return log.WithLabel("user_id", id)
 }
 
+// WithComponent sets the label "component" to the provided value.
+func (log *Log) WithComponent(component string) *Log {
+	return log.WithLabel("component", component)
+}
+
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
 func init() {
 	_, path, _, _ := runtime.Caller(1)
@@ -157,6 +164,11 @@ func (log *Log) write(severity, format string, a ...any) {
 		Severity:       severity,
 		HTTPRequest:    log.httpRequest,
 		SourceLocation: sl,
+	}
+
+	// Default subsystem label to the App Engine service, if present.
+	if serviceName != "" {
+		e.Labels["subsystem"] = serviceName
 	}
 
 	for k, v := range log.data {
