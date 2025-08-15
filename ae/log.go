@@ -101,10 +101,12 @@ type entry struct {
 	HTTPRequest    map[string]any  `json:"httpRequest,omitempty"`
 }
 
-func (log *Log) write(severity, msg string, sl *sourceLocation) {
+func (log *Log) write(severity, format string, a ...any) {
+	file, line, function := logctx(2)
+	sl := &sourceLocation{File: file, Line: line, Function: function}
 	e := entry{
 		Data:           map[string]any{},
-		Message:        msg,
+		Message:        fmt.Sprintf(format, a...),
 		Severity:       severity,
 		HTTPRequest:    log.httpRequest,
 		SourceLocation: sl,
@@ -131,45 +133,17 @@ func (log *Log) write(severity, msg string, sl *sourceLocation) {
 }
 
 func (log *Log) Debugf(format string, a ...any) {
-	log.write("DEBUG", fmt.Sprintf(format, a...), nil)
-}
-
-func (log *Log) Debugfd(format string, a ...any) {
-	file, line, function := logctx(1)
-	sl := &sourceLocation{File: file, Line: line, Function: function}
-
-	log.write("DEBUG", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
+	log.write("DEBUG", format, a...)
 }
 
 func (log *Log) Infof(format string, a ...any) {
-	log.write("INFO", fmt.Sprintf(format, a...), nil)
-}
-
-func (log *Log) Infofd(format string, a ...any) {
-	file, line, function := logctx(1)
-	sl := &sourceLocation{File: file, Line: line, Function: function}
-
-	log.write("INFO", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
+	log.write("INFO", format, a...)
 }
 
 func (log *Log) Warningf(format string, a ...any) {
-	log.write("WARNING", fmt.Sprintf(format, a...), nil)
-}
-
-func (log *Log) Warningfd(format string, a ...any) {
-	file, line, function := logctx(1)
-	sl := &sourceLocation{File: file, Line: line, Function: function}
-
-	log.write("WARNING", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
+	log.write("WARNING", format, a...)
 }
 
 func (log *Log) Errorf(format string, a ...any) {
-	log.write("ERROR", fmt.Sprintf(format, a...), nil)
-}
-
-func (log *Log) Errorfd(format string, a ...any) {
-	file, line, function := logctx(1)
-	sl := &sourceLocation{File: file, Line: line, Function: function}
-
-	log.write("ERROR", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
+	log.write("ERROR", format, a...)
 }
