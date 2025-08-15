@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/akfaew/utils"
@@ -99,6 +100,7 @@ type entry struct {
 	Message        string          `json:"message,omitempty"`
 	Severity       string          `json:"severity,omitempty"`
 	HTTPRequest    map[string]any  `json:"httpRequest,omitempty"`
+	StackTrace     string          `json:"stackTrace,omitempty"`
 }
 
 func (log *Log) write(severity, format string, a ...any) {
@@ -124,6 +126,8 @@ func (log *Log) write(severity, format string, a ...any) {
 			}
 		}
 	}
+
+	e.StackTrace = strings.ReplaceAll(string(debug.Stack()), trimprefix, "")
 
 	if b, err := json.Marshal(e); err == nil {
 		_, _ = os.Stdout.Write(append(b, '\n'))
