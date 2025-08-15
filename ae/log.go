@@ -25,6 +25,7 @@ type Log struct {
 	ctx         context.Context
 	httpRequest map[string]any
 	data        map[string]any
+	labels      map[string]string
 }
 
 func NewLog(ctx context.Context) *Log {
@@ -69,6 +70,21 @@ func (log *Log) WithField(name string, value any) *Log {
 	return &l
 }
 
+func (log *Log) WithLabel(name, value string) *Log {
+	l := *log
+	if l.labels == nil {
+		l.labels = map[string]string{}
+	} else {
+		labels := make(map[string]string, len(l.labels)+1)
+		for k, v := range l.labels {
+			labels[k] = v
+		}
+		l.labels = labels
+	}
+	l.labels[name] = value
+	return &l
+}
+
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
 func init() {
 	_, path, _, _ := runtime.Caller(1)
@@ -93,14 +109,15 @@ type sourceLocation struct {
 }
 
 type entry struct {
-	Trace          string          `json:"logging.googleapis.com/trace,omitempty"`
-	SpanID         string          `json:"logging.googleapis.com/spanId,omitempty"`
-	SourceLocation *sourceLocation `json:"logging.googleapis.com/sourceLocation,omitempty"`
-	Data           map[string]any  `json:"data"`
-	Message        string          `json:"message,omitempty"`
-	Severity       string          `json:"severity,omitempty"`
-	HTTPRequest    map[string]any  `json:"httpRequest,omitempty"`
-	StackTrace     string          `json:"stackTrace,omitempty"`
+	Trace          string            `json:"logging.googleapis.com/trace,omitempty"`
+	SpanID         string            `json:"logging.googleapis.com/spanId,omitempty"`
+	SourceLocation *sourceLocation   `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	Data           map[string]any    `json:"data"`
+	Labels         map[string]string `json:"labels,omitempty"`
+	Message        string            `json:"message,omitempty"`
+	Severity       string            `json:"severity,omitempty"`
+	HTTPRequest    map[string]any    `json:"httpRequest,omitempty"`
+	StackTrace     string            `json:"stackTrace,omitempty"`
 }
 
 func (log *Log) write(severity, format string, a ...any) {
@@ -108,6 +125,7 @@ func (log *Log) write(severity, format string, a ...any) {
 	sl := &sourceLocation{File: file, Line: line, Function: function}
 	e := entry{
 		Data:           map[string]any{},
+		Labels:         map[string]string{},
 		Message:        fmt.Sprintf(format, a...),
 		Severity:       severity,
 		HTTPRequest:    log.httpRequest,
@@ -116,6 +134,10 @@ func (log *Log) write(severity, format string, a ...any) {
 
 	for k, v := range log.data {
 		e.Data[k] = v
+	}
+
+	for k, v := range log.labels {
+		e.Labels[k] = v
 	}
 
 	if log.ctx != nil {
