@@ -202,3 +202,10 @@ func (log *Log) Warningf(format string, a ...any) {
 func (log *Log) Errorf(format string, a ...any) {
 	log.write("ERROR", format, a...)
 }
+
+func (log *Log) Err(err error) {
+	if err == nil {
+		return
+	}
+	log.Errorf("%v", err)
+}
