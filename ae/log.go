@@ -99,6 +99,10 @@ func (log *Log) WithUser(u User) *Log {
 	return log.WithLabel("user_id", u.UserID()).WithLabel("user_email", u.UserEmail())
 }
 
+func (log *Log) WithUserID(id string) *Log {
+	return log.WithLabel("user_id", id)
+}
+
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
 func init() {
 	_, path, _, _ := runtime.Caller(1)
