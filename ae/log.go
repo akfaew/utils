@@ -52,11 +52,20 @@ func NewLogFromRequest(r *http.Request) *Log {
 	if ref := r.Referer(); ref != "" {
 		req["referer"] = ref
 	}
-	if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+
+	if ip := r.Header.Get("X-Appengine-User-Ip"); ip != "" {
+		req["remoteIp"] = ip
+	} else if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
+		if i := strings.Index(ip, ","); i >= 0 {
+			ip = ip[:i]
+		}
+		req["remoteIp"] = strings.TrimSpace(ip)
+	} else if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
 		req["remoteIp"] = ip
 	} else if r.RemoteAddr != "" {
 		req["remoteIp"] = r.RemoteAddr
 	}
+
 	log.httpRequest = req
 	return log
 }
