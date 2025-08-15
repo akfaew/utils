@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"github.com/akfaew/utils"
 	"github.com/akfaew/utils/xctc"
@@ -90,8 +91,12 @@ func (log *Log) WithLabel(name, value string) *Log {
 	return &l
 }
 
+func (log *Log) WithDuration(d time.Duration) *Log {
+	return log.WithField("duration_ms", d.Milliseconds())
+}
+
 func (log *Log) WithUser(u User) *Log {
-	return log.WithLabel(".user_id", u.UserID()).WithLabel(".user_email", u.UserEmail())
+	return log.WithLabel("user_id", u.UserID()).WithLabel("user_email", u.UserEmail())
 }
 
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
