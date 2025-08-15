@@ -141,14 +141,6 @@ func (log *Log) Debugfd(format string, a ...any) {
 	log.write("DEBUG", fmt.Sprintf("%s:%d %s", file, line, fmt.Sprintf(format, a...)), sl)
 }
 
-func (log *Log) DebugJSON(v any) {
-	if b, err := json.MarshalIndent(v, "", "\t"); err != nil {
-		log.write("DEBUG", fmt.Sprintf("json.MarshalIndent(): err=%v", err), nil)
-	} else {
-		log.write("DEBUG", string(b), nil)
-	}
-}
-
 func (log *Log) Infof(format string, a ...any) {
 	log.write("INFO", fmt.Sprintf(format, a...), nil)
 }
