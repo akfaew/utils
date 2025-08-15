@@ -23,6 +23,7 @@ var (
 type Log struct {
 	ctx         context.Context
 	httpRequest map[string]any
+	data        map[string]any
 }
 
 func NewLog(ctx context.Context) *Log {
@@ -50,6 +51,21 @@ func NewLogFromRequest(r *http.Request) *Log {
 	}
 	log.httpRequest = req
 	return log
+}
+
+func (log *Log) WithField(name string, value any) *Log {
+	l := *log
+	if l.data == nil {
+		l.data = map[string]any{}
+	} else {
+		data := make(map[string]any, len(l.data)+1)
+		for k, v := range l.data {
+			data[k] = v
+		}
+		l.data = data
+	}
+	l.data[name] = value
+	return &l
 }
 
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
@@ -81,6 +97,10 @@ func (log *Log) write(severity, msg string) {
 		Message:     msg,
 		Severity:    severity,
 		HTTPRequest: log.httpRequest,
+	}
+
+	for k, v := range log.data {
+		e.Data[k] = v
 	}
 
 	if log.ctx != nil {
