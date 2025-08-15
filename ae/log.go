@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -19,11 +21,35 @@ var (
 )
 
 type Log struct {
-	ctx context.Context
+	ctx         context.Context
+	httpRequest map[string]any
 }
 
 func NewLog(ctx context.Context) *Log {
 	return &Log{ctx: ctx}
+}
+
+// NewLogFromRequest extracts HTTP request metadata into a top-level httpRequest
+// field recognized by Cloud Logging. App Engine's nginx logs populate
+// protoPayload, but logs written via stdout can't set protoPayload directly.
+// httpRequest provides similar functionality in Logs Explorer.
+func NewLogFromRequest(r *http.Request) *Log {
+	log := &Log{ctx: r.Context()}
+	req := map[string]any{
+		"requestMethod": r.Method,
+		"requestUrl":    r.URL.String(),
+		"userAgent":     r.UserAgent(),
+	}
+	if ref := r.Referer(); ref != "" {
+		req["referer"] = ref
+	}
+	if ip, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		req["remoteIp"] = ip
+	} else if r.RemoteAddr != "" {
+		req["remoteIp"] = r.RemoteAddr
+	}
+	log.httpRequest = req
+	return log
 }
 
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
@@ -41,18 +67,20 @@ func logctx(skip int) (file string, line int) {
 }
 
 type entry struct {
-	Trace    string         `json:"logging.googleapis.com/trace,omitempty"`
-	SpanID   string         `json:"logging.googleapis.com/spanId,omitempty"`
-	Data     map[string]any `json:"data"`
-	Message  string         `json:"message,omitempty"`
-	Severity string         `json:"severity,omitempty"`
+	Trace       string         `json:"logging.googleapis.com/trace,omitempty"`
+	SpanID      string         `json:"logging.googleapis.com/spanId,omitempty"`
+	Data        map[string]any `json:"data"`
+	Message     string         `json:"message,omitempty"`
+	Severity    string         `json:"severity,omitempty"`
+	HTTPRequest map[string]any `json:"httpRequest,omitempty"`
 }
 
 func (log *Log) write(severity, msg string) {
 	e := entry{
-		Data:     map[string]any{},
-		Message:  msg,
-		Severity: severity,
+		Data:        map[string]any{},
+		Message:     msg,
+		Severity:    severity,
+		HTTPRequest: log.httpRequest,
 	}
 
 	if log.ctx != nil {
