@@ -127,7 +127,9 @@ func (log *Log) write(severity, format string, a ...any) {
 		}
 	}
 
-	e.StackTrace = strings.ReplaceAll(string(debug.Stack()), trimprefix, "")
+	if severity == "ERROR" {
+		e.StackTrace = strings.ReplaceAll(string(debug.Stack()), trimprefix, "")
+	}
 
 	if b, err := json.Marshal(e); err == nil {
 		_, _ = os.Stdout.Write(append(b, '\n'))
