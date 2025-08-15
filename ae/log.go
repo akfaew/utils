@@ -28,6 +28,11 @@ type Log struct {
 	labels      map[string]string
 }
 
+type User interface {
+	UserID() string
+	UserEmail() string
+}
+
 func NewLog(ctx context.Context) *Log {
 	return &Log{ctx: ctx}
 }
@@ -83,6 +88,10 @@ func (log *Log) WithLabel(name, value string) *Log {
 	}
 	l.labels[name] = value
 	return &l
+}
+
+func (log *Log) WithUser(u User) *Log {
+	return log.WithLabel(".user_id", u.UserID()).WithLabel(".user_email", u.UserEmail())
 }
 
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
