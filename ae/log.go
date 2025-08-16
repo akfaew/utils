@@ -101,13 +101,13 @@ type sourceLocation struct {
 }
 
 type entry struct {
-	Trace          string            `json:"logging.googleapis.com/trace,omitempty"`
-	SpanID         string            `json:"logging.googleapis.com/spanId,omitempty"`
-	SourceLocation sourceLocation    `json:"logging.googleapis.com/sourceLocation,omitempty"`
-	Data           map[string]any    `json:"data"`
+	Severity       string            `json:"severity"`
+	Message        string            `json:"message"`
 	Labels         map[string]string `json:"logging.googleapis.com/labels,omitempty"`
-	Message        string            `json:"message,omitempty"`
-	Severity       string            `json:"severity,omitempty"`
+	SourceLocation sourceLocation    `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SpanID         string            `json:"logging.googleapis.com/spanId,omitempty"`
+	Trace          string            `json:"logging.googleapis.com/trace,omitempty"`
+	Data           map[string]any    `json:"data,omitempty"`
 	HTTPRequest    map[string]any    `json:"httpRequest,omitempty"`
 	StackTrace     string            `json:"stackTrace,omitempty"`
 	ServiceContext *serviceContext   `json:"serviceContext,omitempty"`
