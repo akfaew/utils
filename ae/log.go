@@ -22,6 +22,8 @@ var (
 	projectID  = os.Getenv("GOOGLE_CLOUD_PROJECT")
 	// serviceName holds the App Engine service name, if available.
 	serviceName = os.Getenv("GAE_SERVICE")
+	// serviceVersion holds the App Engine version, if available.
+	serviceVersion = os.Getenv("GAE_VERSION")
 )
 
 type Logger struct {
@@ -108,6 +110,12 @@ type entry struct {
 	Severity       string            `json:"severity,omitempty"`
 	HTTPRequest    map[string]any    `json:"httpRequest,omitempty"`
 	StackTrace     string            `json:"stackTrace,omitempty"`
+	ServiceContext *serviceContext   `json:"serviceContext,omitempty"`
+}
+
+type serviceContext struct {
+	Service string `json:"service"`
+	Version string `json:"version,omitempty"`
 }
 
 func (log *Logger) Debugf(format string, a ...any) {
@@ -149,6 +157,11 @@ func (log *Logger) write(severity, format string, a ...any) {
 	// Default subsystem label to the App Engine service, if present.
 	if serviceName != "" {
 		e.Labels["subsystem"] = serviceName
+		// Populate serviceContext for Google Error Reporting.
+		e.ServiceContext = &serviceContext{Service: serviceName}
+		if serviceVersion != "" {
+			e.ServiceContext.Version = serviceVersion
+		}
 	}
 
 	for k, v := range log.data {
