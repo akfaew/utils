@@ -24,7 +24,7 @@ var (
 	serviceName = os.Getenv("GAE_SERVICE")
 )
 
-type Log struct {
+type Logger struct {
 	ctx         context.Context
 	httpRequest map[string]any
 	data        map[string]any
@@ -36,8 +36,9 @@ type User interface {
 	UserEmail() string
 }
 
+// NewLog creates a new logger with the provided context.
 func NewLog(ctx context.Context) *Log {
-	return &Log{ctx: ctx}
+	return &Logger{ctx: ctx}
 }
 
 // NewLogFromRequest extracts HTTP request metadata into a top-level httpRequest
@@ -45,7 +46,7 @@ func NewLog(ctx context.Context) *Log {
 // protoPayload, but logs written via stdout can't set protoPayload directly.
 // httpRequest provides similar functionality in Logs Explorer.
 func NewLogFromRequest(r *http.Request) *Log {
-	log := &Log{ctx: r.Context()}
+	log := &Logger{ctx: r.Context()}
 	req := map[string]any{
 		"requestMethod": r.Method,
 		"requestUrl":    r.URL.String(),
@@ -109,30 +110,30 @@ type entry struct {
 	StackTrace     string            `json:"stackTrace,omitempty"`
 }
 
-func (log *Log) Debugf(format string, a ...any) {
+func (log *Logger) Debugf(format string, a ...any) {
 	log.write("DEBUG", format, a...)
 }
 
-func (log *Log) Infof(format string, a ...any) {
+func (log *Logger) Infof(format string, a ...any) {
 	log.write("INFO", format, a...)
 }
 
-func (log *Log) Warningf(format string, a ...any) {
+func (log *Logger) Warningf(format string, a ...any) {
 	log.write("WARNING", format, a...)
 }
 
-func (log *Log) Errorf(format string, a ...any) {
+func (log *Logger) Errorf(format string, a ...any) {
 	log.write("ERROR", format, a...)
 }
 
-func (log *Log) Err(err error) {
+func (log *Logger) Err(err error) {
 	if err == nil {
 		return
 	}
 	log.Errorf("%v", err)
 }
 
-func (log *Log) write(severity, format string, a ...any) {
+func (log *Logger) write(severity, format string, a ...any) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
 		Severity: severity,
@@ -178,7 +179,7 @@ func (log *Log) write(severity, format string, a ...any) {
 	}
 }
 
-func (log *Log) WithField(name string, value any) *Log {
+func (log *Logger) WithField(name string, value any) *Logger {
 	l := *log
 	if l.data == nil {
 		l.data = map[string]any{}
@@ -193,7 +194,7 @@ func (log *Log) WithField(name string, value any) *Log {
 	return &l
 }
 
-func (log *Log) WithLabel(name, value string) *Log {
+func (log *Logger) WithLabel(name, value string) *Logger {
 	l := *log
 	if l.labels == nil {
 		l.labels = map[string]string{}
@@ -208,19 +209,19 @@ func (log *Log) WithLabel(name, value string) *Log {
 	return &l
 }
 
-func (log *Log) WithDuration(d time.Duration) *Log {
+func (log *Logger) WithDuration(d time.Duration) *Logger {
 	return log.WithField("duration_ms", d.Milliseconds())
 }
 
-func (log *Log) WithUser(u User) *Log {
+func (log *Logger) WithUser(u User) *Logger {
 	return log.WithLabel("user_id", u.UserID()).WithLabel("user_email", u.UserEmail())
 }
 
-func (log *Log) WithUserID(id string) *Log {
+func (log *Logger) WithUserID(id string) *Logger {
 	return log.WithLabel("user_id", id)
 }
 
 // WithComponent sets the label "component" to the provided value.
-func (log *Log) WithComponent(component string) *Log {
+func (log *Logger) WithComponent(component string) *Logger {
 	return log.WithLabel("component", component)
 }
