@@ -105,7 +105,7 @@ type entry struct {
 	SpanID         string            `json:"logging.googleapis.com/spanId,omitempty"`
 	SourceLocation sourceLocation    `json:"logging.googleapis.com/sourceLocation,omitempty"`
 	Data           map[string]any    `json:"data"`
-	Labels         map[string]string `json:"labels,omitempty"`
+	Labels         map[string]string `json:"logging.googleapis.com/labels,omitempty"`
 	Message        string            `json:"message,omitempty"`
 	Severity       string            `json:"severity,omitempty"`
 	HTTPRequest    map[string]any    `json:"httpRequest,omitempty"`
