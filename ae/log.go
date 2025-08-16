@@ -39,7 +39,7 @@ type User interface {
 }
 
 // NewLog creates a new logger with the provided context.
-func NewLog(ctx context.Context) *Log {
+func NewLog(ctx context.Context) *Logger {
 	return &Logger{ctx: ctx}
 }
 
@@ -47,7 +47,7 @@ func NewLog(ctx context.Context) *Log {
 // field recognized by Cloud Logging. App Engine's nginx logs populate
 // protoPayload, but logs written via stdout can't set protoPayload directly.
 // httpRequest provides similar functionality in Logs Explorer.
-func NewLogFromRequest(r *http.Request) *Log {
+func NewLogFromRequest(r *http.Request) *Logger {
 	log := &Logger{ctx: r.Context()}
 	req := map[string]any{
 		"requestMethod": r.Method,
