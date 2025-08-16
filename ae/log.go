@@ -126,14 +126,16 @@ func init() {
 	trimprefix = filepath.Dir(path) + string(filepath.Separator)
 }
 
-func logctx(skip int) (file string, line int, function string) {
-	pc, file, line, _ := runtime.Caller(skip + 1)
-	file = strings.TrimPrefix(file, trimprefix)
-	if fn := runtime.FuncForPC(pc); fn != nil {
-		function = fn.Name()
+func getlocation(skip int) sourceLocation {
+	pc, file, line, _ := runtime.Caller(skip + 2)
+
+	sl := sourceLocation{
+		Function: runtime.FuncForPC(pc).Name(),
+		File:     file,
+		Line:     line,
 	}
 
-	return
+	return sl
 }
 
 type sourceLocation struct {
@@ -145,7 +147,7 @@ type sourceLocation struct {
 type entry struct {
 	Trace          string            `json:"logging.googleapis.com/trace,omitempty"`
 	SpanID         string            `json:"logging.googleapis.com/spanId,omitempty"`
-	SourceLocation *sourceLocation   `json:"logging.googleapis.com/sourceLocation,omitempty"`
+	SourceLocation sourceLocation    `json:"logging.googleapis.com/sourceLocation,omitempty"`
 	Data           map[string]any    `json:"data"`
 	Labels         map[string]string `json:"labels,omitempty"`
 	Message        string            `json:"message,omitempty"`
@@ -155,15 +157,16 @@ type entry struct {
 }
 
 func (log *Log) write(severity, format string, a ...any) {
-	file, line, function := logctx(2)
-	sl := &sourceLocation{File: file, Line: line, Function: function}
 	e := entry{
-		Data:           map[string]any{},
-		Labels:         map[string]string{},
-		Message:        fmt.Sprintf(format, a...),
-		Severity:       severity,
-		HTTPRequest:    log.httpRequest,
-		SourceLocation: sl,
+		Message:  fmt.Sprintf(format, a...),
+		Severity: severity,
+
+		Data: map[string]any{},
+
+		SourceLocation: getlocation(1),
+
+		Labels:      map[string]string{},
+		HTTPRequest: log.httpRequest,
 	}
 
 	// Default subsystem label to the App Engine service, if present.
