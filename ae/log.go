@@ -72,53 +72,6 @@ func NewLogFromRequest(r *http.Request) *Log {
 	return log
 }
 
-func (log *Log) WithField(name string, value any) *Log {
-	l := *log
-	if l.data == nil {
-		l.data = map[string]any{}
-	} else {
-		data := make(map[string]any, len(l.data)+1)
-		for k, v := range l.data {
-			data[k] = v
-		}
-		l.data = data
-	}
-	l.data[name] = value
-	return &l
-}
-
-func (log *Log) WithLabel(name, value string) *Log {
-	l := *log
-	if l.labels == nil {
-		l.labels = map[string]string{}
-	} else {
-		labels := make(map[string]string, len(l.labels)+1)
-		for k, v := range l.labels {
-			labels[k] = v
-		}
-		l.labels = labels
-	}
-	l.labels[name] = value
-	return &l
-}
-
-func (log *Log) WithDuration(d time.Duration) *Log {
-	return log.WithField("duration_ms", d.Milliseconds())
-}
-
-func (log *Log) WithUser(u User) *Log {
-	return log.WithLabel("user_id", u.UserID()).WithLabel("user_email", u.UserEmail())
-}
-
-func (log *Log) WithUserID(id string) *Log {
-	return log.WithLabel("user_id", id)
-}
-
-// WithComponent sets the label "component" to the provided value.
-func (log *Log) WithComponent(component string) *Log {
-	return log.WithLabel("component", component)
-}
-
 // Set trimprefix to the path to the source code directory, so that we only log the filename and not the full path.
 func init() {
 	_, path, _, _ := runtime.Caller(1)
@@ -154,6 +107,29 @@ type entry struct {
 	Severity       string            `json:"severity,omitempty"`
 	HTTPRequest    map[string]any    `json:"httpRequest,omitempty"`
 	StackTrace     string            `json:"stackTrace,omitempty"`
+}
+
+func (log *Log) Debugf(format string, a ...any) {
+	log.write("DEBUG", format, a...)
+}
+
+func (log *Log) Infof(format string, a ...any) {
+	log.write("INFO", format, a...)
+}
+
+func (log *Log) Warningf(format string, a ...any) {
+	log.write("WARNING", format, a...)
+}
+
+func (log *Log) Errorf(format string, a ...any) {
+	log.write("ERROR", format, a...)
+}
+
+func (log *Log) Err(err error) {
+	if err == nil {
+		return
+	}
+	log.Errorf("%v", err)
 }
 
 func (log *Log) write(severity, format string, a ...any) {
@@ -202,25 +178,49 @@ func (log *Log) write(severity, format string, a ...any) {
 	}
 }
 
-func (log *Log) Debugf(format string, a ...any) {
-	log.write("DEBUG", format, a...)
-}
-
-func (log *Log) Infof(format string, a ...any) {
-	log.write("INFO", format, a...)
-}
-
-func (log *Log) Warningf(format string, a ...any) {
-	log.write("WARNING", format, a...)
-}
-
-func (log *Log) Errorf(format string, a ...any) {
-	log.write("ERROR", format, a...)
-}
-
-func (log *Log) Err(err error) {
-	if err == nil {
-		return
+func (log *Log) WithField(name string, value any) *Log {
+	l := *log
+	if l.data == nil {
+		l.data = map[string]any{}
+	} else {
+		data := make(map[string]any, len(l.data)+1)
+		for k, v := range l.data {
+			data[k] = v
+		}
+		l.data = data
 	}
-	log.Errorf("%v", err)
+	l.data[name] = value
+	return &l
+}
+
+func (log *Log) WithLabel(name, value string) *Log {
+	l := *log
+	if l.labels == nil {
+		l.labels = map[string]string{}
+	} else {
+		labels := make(map[string]string, len(l.labels)+1)
+		for k, v := range l.labels {
+			labels[k] = v
+		}
+		l.labels = labels
+	}
+	l.labels[name] = value
+	return &l
+}
+
+func (log *Log) WithDuration(d time.Duration) *Log {
+	return log.WithField("duration_ms", d.Milliseconds())
+}
+
+func (log *Log) WithUser(u User) *Log {
+	return log.WithLabel("user_id", u.UserID()).WithLabel("user_email", u.UserEmail())
+}
+
+func (log *Log) WithUserID(id string) *Log {
+	return log.WithLabel("user_id", id)
+}
+
+// WithComponent sets the label "component" to the provided value.
+func (log *Log) WithComponent(component string) *Log {
+	return log.WithLabel("component", component)
 }
